@@ -14,7 +14,8 @@ Team.prototype.init = function(players, side) {
 
 Team.prototype.tick = function(players, opponents, ball) {
     players.forEach(function(player) {
-        player.x += 1;
+        player.x += Math.random() - 0.1;
+        player.y += Math.random() - 0.5;
     });
 }
 
@@ -25,22 +26,25 @@ function Player() {
 };
 
 function Soccer() {
-    this.team1 = new Team('1');
-    this.team2 = new Team('2');
-    this.playersTeam1 = [new Player(), new Player(), new Player(), new Player()];
-    this.playersTeam2 = [new Player(), new Player(), new Player(), new Player()];
     var canvas = document.getElementById('field');
     this.ctx = canvas.getContext('2d');
+    this.field = { 
+        x: 10,
+        y: 10,
+        w: canvas.getAttribute('width') - 20, 
+        h: canvas.getAttribute('height') - 20,
+        wPad: canvas.getAttribute('width'),
+        hPad: canvas.getAttribute('height')
+    };
     this.goal = { 
         w: 40, 
         h: 90
     };
-    this.field = { 
-        w: canvas.getAttribute('width') - 20, 
-        h: canvas.getAttribute('height') - 20,
-        x: 10,
-        y: 10
-    };
+
+    this.team1 = new Team('1');
+    this.team2 = new Team('2');
+    this.playersTeam1 = [new Player(), new Player(), new Player(), new Player()];
+    this.playersTeam2 = [new Player(), new Player(), new Player(), new Player()];
 };
 
 Soccer.prototype.draw = function() {
@@ -48,12 +52,12 @@ Soccer.prototype.draw = function() {
     var goal = this.goal;
     var ctx = this.ctx;
     ctx.fillStyle = 'green';
-    ctx.fillRect(0, 0, field.w + 20, field.h + 20);                 // green grass
+    ctx.fillRect(0, 0, field.wPad, field.hPad);                 // green grass
     ctx.strokeStyle = 'white';
     ctx.strokeRect(field.x, field.y, field.w, field.h);             // field outline
     ctx.strokeRect(field.x + field.w/2 - 1, field.y, 2, field.h);   // center line
-    ctx.strokeRect(field.x, (field.h + 20)/2 - goal.h/2, goal.w, goal.h);  // left goal
-    ctx.strokeRect(field.w + field.x - goal.w, (field.h + 20)/2 - goal.h/2, goal.w, goal.h);  // right goal
+    ctx.strokeRect(field.x, (field.hPad)/2 - goal.h/2, goal.w, goal.h);  // left goal
+    ctx.strokeRect(field.w + field.x - goal.w, (field.hPad)/2 - goal.h/2, goal.w, goal.h);  // right goal
 
     this.playersTeam1.forEach(drawPlayer);
     this.playersTeam2.forEach(drawPlayer);
