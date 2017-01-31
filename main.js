@@ -12,6 +12,12 @@ Team.prototype.init = function(players, side) {
     }
 };
 
+Team.prototype.tick = function(players, opponents, ball) {
+    players.forEach(function(player) {
+        player.x += 1;
+    });
+}
+
 function Player() {
     this.x = 0;
     this.y = 0;
@@ -49,8 +55,8 @@ Soccer.prototype.draw = function() {
     ctx.strokeRect(field.x, (field.h + 20)/2 - goal.h/2, goal.w, goal.h);  // left goal
     ctx.strokeRect(field.w + field.x - goal.w, (field.h + 20)/2 - goal.h/2, goal.w, goal.h);  // right goal
 
-    this.playersTeam1.forEach(drawPlayer)
-    this.playersTeam2.forEach(drawPlayer)
+    this.playersTeam1.forEach(drawPlayer);
+    this.playersTeam2.forEach(drawPlayer);
 
     function drawPlayer(player) {
         ctx.fillStyle = 'white';
@@ -69,6 +75,7 @@ Soccer.prototype.init = function() {
 Soccer.prototype.tick = function(time) {
     // console.log(time);
     // var players = team.tick(players, opponents, ball);
+    this.team1.tick(this.playersTeam1, this.playersTeam2);
     this.draw();
 };
 
