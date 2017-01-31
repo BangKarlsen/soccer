@@ -3,11 +3,11 @@ function Team(name) {
     console.log('Create team: ' + name);
 }
 
-Team.prototype.init = function(players) {
+Team.prototype.init = function(players, side) {
     console.log('building up team ' + this.name);
     // setup our initial team formation
     for(var i = 0; i < 4; i++) {
-        players[i].x = 100;
+        players[i].x = side === 'left' ? 100 : 450;
         players[i].y = 400 / (i+1);
     }
 };
@@ -40,23 +40,34 @@ function Soccer() {
 Soccer.prototype.draw = function() {
     var field = this.field;
     var goal = this.goal;
-    this.ctx.fillStyle = 'green';
-    this.ctx.fillRect(0, 0, field.w + 20, field.h + 20);                 // green grass
-    this.ctx.strokeStyle = 'white';
-    this.ctx.strokeRect(field.x, field.y, field.w, field.h);             // field outline
-    this.ctx.strokeRect(field.x + field.w/2 - 1, field.y, 2, field.h);   // center line
-    this.ctx.strokeRect(field.x, (field.h + 20)/2 - goal.h/2, goal.w, goal.h);  // left goal
-    this.ctx.strokeRect(field.w + field.x - goal.w, (field.h + 20)/2 - goal.h/2, goal.w, goal.h);  // right goal
+    var ctx = this.ctx;
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, field.w + 20, field.h + 20);                 // green grass
+    ctx.strokeStyle = 'white';
+    ctx.strokeRect(field.x, field.y, field.w, field.h);             // field outline
+    ctx.strokeRect(field.x + field.w/2 - 1, field.y, 2, field.h);   // center line
+    ctx.strokeRect(field.x, (field.h + 20)/2 - goal.h/2, goal.w, goal.h);  // left goal
+    ctx.strokeRect(field.w + field.x - goal.w, (field.h + 20)/2 - goal.h/2, goal.w, goal.h);  // right goal
+
+    this.playersTeam1.forEach(drawPlayer)
+    this.playersTeam2.forEach(drawPlayer)
+
+    function drawPlayer(player) {
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, 5, 0, Math.PI*2);
+        ctx.fill();
+    }
 };
 
 Soccer.prototype.init = function() {
-    this.team1.init(this.playersTeam1);
-    this.team2.init(this.playersTeam2);
+    this.team1.init(this.playersTeam1, 'left');
+    this.team2.init(this.playersTeam2, 'right');
     this.draw();
 }
 
 Soccer.prototype.tick = function(time) {
-    // console.log();
+    // console.log(time);
     // var players = team.tick(players, opponents, ball);
     this.draw();
 };
@@ -66,9 +77,11 @@ game.init();
 
 var start;
 function run(timestamp) {
+    var refreshRate = 10; // millis
+
     if (!start) start = timestamp;
     var interval = timestamp - start;
-    if (interval > 100) {
+    if (interval > refreshRate) {    
         start = timestamp;
         game.tick(timestamp);
     }
