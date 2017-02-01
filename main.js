@@ -66,11 +66,9 @@ Soccer.prototype.draw = function() {
 Soccer.prototype.tick = function(time) {
     var posTeam1 = this.playersPosTeam1;
     var playerDirsTeam1 = this.team1.tick(this.playersPosTeam1, this.playersPosTeam2);
-    var i = 0;
-    playerDirsTeam1.forEach(function(playerDir) {
-        posTeam1[i].x += Math.cos(-playerDir.runDir) * playerDir.runSpeed;
-        posTeam1[i].y += Math.sin(-playerDir.runDir) * playerDir.runSpeed;
-        i++;
+    playerDirsTeam1.forEach(function(playerDir, index) {
+        posTeam1[index].x += Math.cos(-playerDir.runDir) * playerDir.runSpeed;
+        posTeam1[index].y += Math.sin(-playerDir.runDir) * playerDir.runSpeed;
     });
     this.draw();
 };
