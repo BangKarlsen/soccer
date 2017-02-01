@@ -1,22 +1,3 @@
-function Team(name, side) {
-    this.name = name;
-    this.side = side;
-    console.log('Created ' + side + ' team: ' + name);
-}
-
-Team.prototype.tick = function(playersPos, opponents, ball) {
-    var playerDirs = [];
-    playersPos.forEach(function(player) {
-        // ignore positions and just run
-        playerDirs.push({
-            // runDir: Math.random() * Math.PI * 2,
-            runDir: 0,
-            runSpeed: Math.random() * 3
-        });
-    });
-    return playerDirs;
-}
-
 
 function Soccer() {
     var canvas = document.getElementById('field');
@@ -34,8 +15,13 @@ function Soccer() {
         h: 90
     };
 
-    this.team1 = new Team('1', 'left');
-    this.team2 = new Team('2', 'right');
+    // Still not the nicest way to do this... hmm..
+    var teams = [];
+    createFcMowgli(teams);
+    createFcKogle(teams);
+    
+    this.team1 = new teams[0]('1', 'left');
+    this.team2 = new teams[1]('2', 'right');
     this.playersPosTeam1 = [{x: 200, y: 100}, {x: 200, y: 200}, {x: 200, y: 300}, {x: 200, y: 350}];
     this.playersPosTeam2 = [{x: 500, y: 100}, {x: 500, y: 200}, {x: 500, y: 300}, {x: 500, y: 350}];
 };
@@ -67,8 +53,14 @@ Soccer.prototype.tick = function(time) {
     var posTeam1 = this.playersPosTeam1;
     var playerDirsTeam1 = this.team1.tick(this.playersPosTeam1, this.playersPosTeam2);
     playerDirsTeam1.forEach(function(playerDir, index) {
-        posTeam1[index].x += Math.cos(-playerDir.runDir) * playerDir.runSpeed;
-        posTeam1[index].y += Math.sin(-playerDir.runDir) * playerDir.runSpeed;
+        posTeam1[index].x += Math.cos(-playerDir.runDir) * playerDir.runSpeed; // consider integrating over time
+        posTeam1[index].y += Math.sin(-playerDir.runDir) * playerDir.runSpeed; // to be independent of refreshRate
+    });
+    var posTeam2 = this.playersPosTeam2;
+    var playerDirsTeam2 = this.team2.tick(this.playersPosTeam2, this.playersPosTeam1);
+    playerDirsTeam2.forEach(function(playerDir, index) {
+        posTeam2[index].x += Math.cos(-playerDir.runDir) * playerDir.runSpeed; // consider integrating over time
+        posTeam2[index].y += Math.sin(-playerDir.runDir) * playerDir.runSpeed; // to be independent of refreshRate
     });
     this.draw();
 };
