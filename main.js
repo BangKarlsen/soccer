@@ -25,8 +25,8 @@ function Soccer() {
     // Find a better way to instatiate teams... hm.
     var t1 = createFcMowgli();
     var t2 = createFcKogle();
-    this.team1 = new t1('left');
-    this.team2 = new t2('right');
+    this.team1 = new t1('left', this.field.w, this.field.h);
+    this.team2 = new t2('right', this.field.w, this.field.h);
 
     this.playersPosTeam1 = [{x: 200, y: 100}, {x: 200, y: 200}, {x: 200, y: 300}, {x: 200, y: 350}];
     this.playersPosTeam2 = [{x: 500, y: 100}, {x: 500, y: 200}, {x: 500, y: 300}, {x: 500, y: 350}];
@@ -77,8 +77,8 @@ Soccer.prototype.tick = function(time) {
         return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
     }
 
-    function updateTeam(team, teamPositions, ball) {
-        var teamDirs = team.tick(teamPositions);
+    function updateTeam(team, teamPositions, opponentsPositions, ball) {
+        var teamDirs = team.tick(teamPositions, opponentsPositions, ball);
         teamDirs.forEach(function(playerDir, index) {
             var variation = Math.random(); // + 0.3;
             var playerPos = teamPositions[index];
@@ -103,8 +103,8 @@ Soccer.prototype.tick = function(time) {
         ball.timesKicked = 0;
     }
 
-    updateTeam(this.team1, this.playersPosTeam1, this.ball);
-    updateTeam(this.team2, this.playersPosTeam2, this.ball);
+    updateTeam(this.team1, this.playersPosTeam1, this.playersPosTeam2, this.ball);
+    updateTeam(this.team2, this.playersPosTeam2, this.playersPosTeam1, this.ball);
     updateBall(this.ball);
 
     this.draw();
