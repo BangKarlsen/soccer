@@ -38,7 +38,7 @@ Soccer.prototype.draw = function() {
         gradient.addColorStop(0.5, 'green');
         gradient.addColorStop(1, 'darkgreen');
         ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, field.wPad, field.hPad);                          // green grass
+        ctx.fillRect(0, 0, field.wPad, field.hPad);                          // field grass
         ctx.strokeStyle = 'white';
         ctx.strokeRect(field.x, field.y, field.w, field.h);                  // field outline
         ctx.strokeRect(field.x + field.w/2 - 1, field.y, 2, field.h);        // center line
