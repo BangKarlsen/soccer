@@ -1,4 +1,4 @@
-function createFcKogle(teams) {
+function createFcKogle() {
     function FcKogle(name, side) {
         this.name = name;
         this.side = side;
@@ -17,5 +17,5 @@ function createFcKogle(teams) {
         return playerDirs;
     }
 
-    teams.push(FcKogle);
+    return FcKogle;
 }

@@ -1,4 +1,4 @@
-function createFcMowgli(teams) {
+function createFcMowgli() {
     function FcMowgli(name, side) {
         this.name = name;
         this.side = side;
@@ -17,5 +17,5 @@ function createFcMowgli(teams) {
         return playerDirs;
     }
 
-    teams.push(FcMowgli);
+    return FcMowgli;
 };
