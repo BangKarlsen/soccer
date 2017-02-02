@@ -15,7 +15,7 @@ function createFcKogle() {
             playerDirs.push({
                 runDir: runDir,
                 runSpeed: 2,
-                kickDir: -Math.PI/4,
+                kickDir: Math.PI + Math.PI/12,
                 kickSpeed: 15
             });
         });
