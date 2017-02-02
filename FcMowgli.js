@@ -1,8 +1,9 @@
 function createFcMowgli() {
-    function FcMowgli(name, side) {
-        this.name = name;
+    function FcMowgli(side) {
         this.side = side;
-        console.log('Created ' + side + ' team: ' + name);
+        this.name = 'FC Mowgli';
+        this.color = 'lightblue';
+        console.log('Created ' + this.color + ' team: ' + this.name);
     }
 
     FcMowgli.prototype.tick = function(playersPos, opponents, ball) {

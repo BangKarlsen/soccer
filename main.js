@@ -25,21 +25,19 @@ function Soccer() {
     // Find a better way to instatiate teams... hm.
     var t1 = createFcMowgli();
     var t2 = createFcKogle();
-    this.team1 = new t1('1', 'left');
-    this.team2 = new t2('2', 'right');
+    this.team1 = new t1('left');
+    this.team2 = new t2('right');
 
     this.playersPosTeam1 = [{x: 200, y: 100}, {x: 200, y: 200}, {x: 200, y: 300}, {x: 200, y: 350}];
     this.playersPosTeam2 = [{x: 500, y: 100}, {x: 500, y: 200}, {x: 500, y: 300}, {x: 500, y: 350}];
 };
 
 Soccer.prototype.draw = function() {
-    var field = this.field;
-    var goal = this.goal;
-    var ball = this.ball;
-    var ctx = this.ctx;
-    
-    function drawField() {
-        ctx.fillStyle = 'green';
+    function drawField(ctx, field, goal) {
+        var gradient = ctx.createLinearGradient(0, 0, 0, 600);
+        gradient.addColorStop(0.5, 'green');
+        gradient.addColorStop(1, 'darkgreen');
+        ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, field.wPad, field.hPad);                          // green grass
         ctx.strokeStyle = 'white';
         ctx.strokeRect(field.x, field.y, field.w, field.h);                  // field outline
@@ -48,7 +46,7 @@ Soccer.prototype.draw = function() {
         ctx.strokeRect(field.w + field.x - goal.w, (field.hPad)/2 - goal.h/2, goal.w, goal.h);  // right goal
     }
     
-    function drawBall() {
+    function drawBall(ctx, ball) {
         ctx.beginPath();
         ctx.arc(ball.x, ball.y, 7, 0, Math.PI*2);
         ctx.fillStyle = 'grey';
@@ -57,19 +55,21 @@ Soccer.prototype.draw = function() {
         ctx.stroke();
     }
 
-    function drawPlayerPos(player) {
-        ctx.beginPath();
-        ctx.arc(player.x, player.y, 10, 0, Math.PI*2);
-        ctx.fillStyle = 'white';
-        ctx.fill();
-        ctx.strokeStyle = 'black';
-        ctx.stroke();
+    function drawTeam(ctx, team, teamPositions) {
+        ctx.fillStyle = team.color;
+        teamPositions.forEach(function (player) {
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, 10, 0, Math.PI*2);
+            ctx.fill();
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+        });
     }
 
-    drawField();
-    drawBall();
-    this.playersPosTeam1.forEach(drawPlayerPos);
-    this.playersPosTeam2.forEach(drawPlayerPos);
+    drawField(this.ctx, this.field, this.goal);
+    drawBall(this.ctx, this.ball);
+    drawTeam(this.ctx, this.team1, this.playersPosTeam1);
+    drawTeam(this.ctx, this.team2, this.playersPosTeam2);
 };
 
 Soccer.prototype.tick = function(time) {
@@ -80,7 +80,7 @@ Soccer.prototype.tick = function(time) {
     function updateTeam(team, teamPositions, ball) {
         var teamDirs = team.tick(teamPositions);
         teamDirs.forEach(function(playerDir, index) {
-            var variation = Math.random();// + 0.3;
+            var variation = Math.random(); // + 0.3;
             var playerPos = teamPositions[index];
             playerPos.x += Math.cos(-playerDir.runDir) * playerDir.runSpeed * variation; // consider integrating over time
             playerPos.y += Math.sin(-playerDir.runDir) * playerDir.runSpeed * variation; // to be independent of refreshRate

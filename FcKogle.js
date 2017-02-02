@@ -1,8 +1,9 @@
 function createFcKogle() {
-    function FcKogle(name, side) {
-        this.name = name;
+    function FcKogle(side) {
         this.side = side;
-        console.log('Created ' + side + ' team: ' + name);
+        this.name = 'FC Kogle';
+        this.color = 'orange';
+        console.log('Created ' + this.color + ' team: ' + this.name);
     }
 
     FcKogle.prototype.tick = function(playersPos, opponents, ball) {
