@@ -36,7 +36,6 @@ function createFcMowgli() {
             var runSpeed = 3; 
             if (dist(goaliePos, goalPos()) > 15) {
                 runDir = dir(goaliePos, goalPos());
-                console.log(runDir);
             } else {
                 runSpeed = 0;
             }
@@ -48,7 +47,7 @@ function createFcMowgli() {
             };
         }
 
-        function getBestKickDir(playerPos, opponentsPos, goalPos) {
+        function getBestKick(playerPos, opponentsPos, goalPos) {
             var goalDir = dir(playerPos, goalPos);
             var badIdea = false;
             opponentsPos.forEach(function(opponentPos) {
@@ -59,10 +58,10 @@ function createFcMowgli() {
             });
             if (badIdea) {
                 // should pass to fellow player
-                return goalDir;
+                return { dir: goalDir - 0.9, speed: 5 };
             } else {
                 // shoot at goal
-                return goalDir;
+                return { dir: goalDir, speed: 15 };
             }
         }
 
@@ -83,15 +82,14 @@ function createFcMowgli() {
             if (playerBallDist < minDist) {
                 minDist = playerBallDist;
                 bestPlayerIndex = index;
-                console.log('best player is ' + bestPlayerIndex);
             }    
         });
-
+        var bestKick = getBestKick(playersPos[bestPlayerIndex], opponentsPos, opponentGoalPos());
         playerDirs[bestPlayerIndex] = {
                 runDir: dir(playersPos[bestPlayerIndex], ball),
                 runSpeed: 3,
-                kickDir: getBestKickDir(playersPos[bestPlayerIndex], opponentsPos, opponentGoalPos()),
-                kickSpeed: 15
+                kickDir: bestKick.dir,
+                kickSpeed: bestKick.speed
             }
 
         playersPos.forEach(function(player, index) {
