@@ -11,7 +11,7 @@ function createFcMowgli() {
         playersPos.forEach(function(player) {
             playerDirs.push({
                 runDir: runDir,
-                runSpeed: Math.random() * 3,
+                runSpeed: 3,
                 kickDir: Math.PI/4,
                 kickSpeed: 15
             });

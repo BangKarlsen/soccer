@@ -80,9 +80,10 @@ Soccer.prototype.tick = function(time) {
     function updateTeam(team, teamPositions, ball) {
         var teamDirs = team.tick(teamPositions);
         teamDirs.forEach(function(playerDir, index) {
-            var playerPos = teamPositions[index]; 
-            playerPos.x += Math.cos(-playerDir.runDir) * playerDir.runSpeed; // consider integrating over time
-            playerPos.y += Math.sin(-playerDir.runDir) * playerDir.runSpeed; // to be independent of refreshRate
+            var variation = Math.random();// + 0.3;
+            var playerPos = teamPositions[index];
+            playerPos.x += Math.cos(-playerDir.runDir) * playerDir.runSpeed * variation; // consider integrating over time
+            playerPos.y += Math.sin(-playerDir.runDir) * playerDir.runSpeed * variation; // to be independent of refreshRate
             if (dist(playerPos, ball) < 10) {
                 ball.timesKicked++;
                 ball.dir = playerDir.kickDir;
@@ -93,7 +94,7 @@ Soccer.prototype.tick = function(time) {
     
     function updateBall(ball) {
         if (ball.timesKicked > 1) {
-            ball.dir = Math.random * Math.PI * 2;
+            ball.dir = Math.random() * Math.PI * 2;
             ball.timesKicked = 0;
         }
         ball.speed *= 0.9;
