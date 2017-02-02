@@ -15,10 +15,12 @@ function Soccer() {
         h: 90
     };
 
+    // Find a better way to instatiate teams... hm.
     var t1 = createFcMowgli();
     var t2 = createFcKogle();
     this.team1 = new t1('1', 'left');
     this.team2 = new t2('2', 'right');
+    
     this.playersPosTeam1 = [{x: 200, y: 100}, {x: 200, y: 200}, {x: 200, y: 300}, {x: 200, y: 350}];
     this.playersPosTeam2 = [{x: 500, y: 100}, {x: 500, y: 200}, {x: 500, y: 300}, {x: 500, y: 350}];
 };
