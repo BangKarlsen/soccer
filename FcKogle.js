@@ -11,7 +11,9 @@ function createFcKogle() {
         playersPos.forEach(function(player) {
             playerDirs.push({
                 runDir: runDir,
-                runSpeed: Math.random() * 3
+                runSpeed: Math.random() * 3,
+                kickDir: -Math.PI/4,
+                kickSpeed: 15
             });
         });
         return playerDirs;

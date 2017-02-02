@@ -72,20 +72,43 @@ Soccer.prototype.draw = function() {
 };
 
 Soccer.prototype.tick = function(time) {
+    function dist(a, b) {
+        return Math.sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
+    };
+    var kicked = false;
+    var ball = this.ball;
     var posTeam1 = this.playersPosTeam1;
     var playerDirsTeam1 = this.team1.tick(this.playersPosTeam1, this.playersPosTeam2);
     playerDirsTeam1.forEach(function(playerDir, index) {
-        posTeam1[index].x += Math.cos(-playerDir.runDir) * playerDir.runSpeed; // consider integrating over time
-        posTeam1[index].y += Math.sin(-playerDir.runDir) * playerDir.runSpeed; // to be independent of refreshRate
+        var playerPos = posTeam1[index]; 
+        playerPos.x += Math.cos(-playerDir.runDir) * playerDir.runSpeed; // consider integrating over time
+        playerPos.y += Math.sin(-playerDir.runDir) * playerDir.runSpeed; // to be independent of refreshRate
+
+        if (dist(playerPos, ball) < 10) {
+            kicked = true;
+            ball.dir = playerDir.kickDir;
+            ball.speed = playerDir.kickSpeed;
+        }
     });
 
     var posTeam2 = this.playersPosTeam2;
     var playerDirsTeam2 = this.team2.tick(this.playersPosTeam2, this.playersPosTeam1);
     playerDirsTeam2.forEach(function(playerDir, index) {
-        posTeam2[index].x += Math.cos(-playerDir.runDir) * playerDir.runSpeed; // consider integrating over time
-        posTeam2[index].y += Math.sin(-playerDir.runDir) * playerDir.runSpeed; // to be independent of refreshRate
+        var playerPos = posTeam2[index];
+        playerPos.x += Math.cos(-playerDir.runDir) * playerDir.runSpeed; // consider integrating over time
+        playerPos.y += Math.sin(-playerDir.runDir) * playerDir.runSpeed; // to be independent of refreshRate
+
+        if (dist(playerPos, ball) < 10) {
+            kicked = true;
+            ball.dir = playerDir.kickDir;
+            ball.speed = playerDir.kickSpeed;
+        }
     });
-    
+
+    ball.speed *= 0.9;
+    ball.x += Math.cos(-ball.dir) * ball.speed;
+    ball.y += Math.sin(-ball.dir) * ball.speed;
+
     this.draw();
 };
 
