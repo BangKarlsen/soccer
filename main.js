@@ -77,13 +77,28 @@ Soccer.prototype.tick = function(time) {
         return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
     }
 
-    function updateTeam(team, teamPositions, opponentsPositions, ball) {
-        var teamDirs = team.tick(teamPositions, opponentsPositions, ball);
+    function clipPlayerPos(playerPos, field) {
+        playerPos.x = Math.max(10, playerPos.x);
+        playerPos.x = Math.min(field.w + 10, playerPos.x);
+        playerPos.y = Math.max(10, playerPos.y);
+        playerPos.y = Math.min(field.h + 10, playerPos.y);
+    }
+
+    function clipBallPos(ball, field) {
+        ball.x = Math.max(0, ball.x);
+        ball.x = Math.min(field.wPad, ball.x);
+        ball.y = Math.max(10, ball.y);
+        ball.y = Math.min(field.h, ball.y);
+    }
+
+    function updateTeam(team, teamPositions, opponentsPositions, ball, field) {
+        var teamDirs = team.tick(teamPositions.slice(), opponentsPositions.slice(), { x: ball.x, y: ball.y });
         teamDirs.forEach(function(playerDir, index) {
             var variation = Math.random(); // + 0.3;
             var playerPos = teamPositions[index];
             playerPos.x += Math.cos(-playerDir.runDir) * playerDir.runSpeed * variation; // consider integrating over time
             playerPos.y += Math.sin(-playerDir.runDir) * playerDir.runSpeed * variation; // to be independent of refreshRate
+            clipPlayerPos(playerPos, field);
             if (dist(playerPos, ball) < 10) {
                 ball.timesKicked++;
                 ball.dir = playerDir.kickDir;
@@ -92,7 +107,7 @@ Soccer.prototype.tick = function(time) {
         });
     }
     
-    function updateBall(ball) {
+    function updateBall(ball, field) {
         if (ball.timesKicked > 1) {
             ball.dir = Math.random() * Math.PI * 2;
             ball.timesKicked = 0;
@@ -103,8 +118,8 @@ Soccer.prototype.tick = function(time) {
         ball.timesKicked = 0;
     }
 
-    updateTeam(this.team1, this.playersPosTeam1, this.playersPosTeam2, this.ball);
-    updateTeam(this.team2, this.playersPosTeam2, this.playersPosTeam1, this.ball);
+    updateTeam(this.team1, this.playersPosTeam1, this.playersPosTeam2, this.ball, this.field);
+    updateTeam(this.team2, this.playersPosTeam2, this.playersPosTeam1, this.ball, this.field);
     updateBall(this.ball);
 
     this.draw();
