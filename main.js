@@ -128,16 +128,16 @@ Soccer.prototype.tick = function(time) {
 var game = new Soccer();
 var lastTime;
 
-function run(timestamp) {
+function run(currentTime) {
     var refreshRate = 10; // millis
-    var interval = timestamp - lastTime;
+    var interval = currentTime - lastTime;
     if (!lastTime) {
-        lastTime = timestamp;
+        lastTime = currentTime;
     }
         
     if (interval > refreshRate) {    
-        lastTime = timestamp;
-        game.tick(timestamp);
+        lastTime = currentTime;
+        game.tick(currentTime);
     }
     window.requestAnimationFrame(run);
 }
