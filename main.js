@@ -114,15 +114,11 @@ Soccer.prototype.tick = function(time) {
         ball.y = Math.min(field.h + 10, ball.y);
     }
 
-    function resetTeams(side) {
-        console.log('THeres a scooooore to ' + side + ' side');
+    function resetTeams(sideHasBall) {
+        console.log('THeres a scooooore!! ' + sideHasBall + ' haz ball');
     }
     
     function updateBall(ball, field, goal, score) {
-        var goalLine = {
-            start: field.hPad/2 - goal.h/2,
-            end: field.hPad/2 - goal.h/2 + goal.h
-        };
         if (ball.timesKicked > 1) {
             ball.dir = Math.random() * Math.PI * 2;
         }
@@ -132,12 +128,19 @@ Soccer.prototype.tick = function(time) {
         ball.x += Math.cos(-ball.dir) * ball.speed;
         ball.y += Math.sin(-ball.dir) * ball.speed;
         ball.speed *= 0.9;
-        // split into new function..
-        if (ball.x < 10 && ball.y > goalLine.start && ball.y < goalLine.end) {
-            score.left++;
-            resetTeams('left');
-        } else if (ball.x > field.w && ball.y > goalLine.start && ball.y < goalLine.end) {
+    }
+
+    function updateScores(ball, field, goal, score) {
+        var goalLine = {
+            start: field.hPad/2 - goal.h/2,
+            end: field.hPad/2 - goal.h/2 + goal.h
+        };
+        var isInGoal = ball.y > goalLine.start && ball.y < goalLine.end;
+        if (ball.x < 10 && isInGoal) {
             score.right++;
+            resetTeams('left');
+        } else if (ball.x > field.w && isInGoal) {
+            score.left++;
             resetTeams('right');
         } else {
             clipBallPos(ball, field);
@@ -146,7 +149,8 @@ Soccer.prototype.tick = function(time) {
 
     updateTeam(this.team1, this.playersPosTeam1, this.playersPosTeam2, this.ball, this.field);
     updateTeam(this.team2, this.playersPosTeam2, this.playersPosTeam1, this.ball, this.field);
-    updateBall(this.ball, this.field, this.goal, this.score);
+    updateBall(this.ball);
+    updateScores(this.ball, this.field, this.goal, this.score);
     
     this.draw();
 };
