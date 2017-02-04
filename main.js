@@ -21,6 +21,10 @@ function Soccer() {
         speed: 0,
         timesKicked: 0
     };
+    this.score = {
+        left: 0,
+        right: 0
+    };
 
     // Find a better way to instatiate teams... hm.
     var t1 = createFcMowgli();
@@ -42,8 +46,8 @@ Soccer.prototype.draw = function() {
         ctx.strokeStyle = 'white';
         ctx.strokeRect(field.x, field.y, field.w, field.h);                  // field outline
         ctx.strokeRect(field.x + field.w/2 - 1, field.y, 2, field.h);        // center line
-        ctx.strokeRect(field.x, (field.hPad)/2 - goal.h/2, goal.w, goal.h);  // left goal
-        ctx.strokeRect(field.w + field.x - goal.w, (field.hPad)/2 - goal.h/2, goal.w, goal.h);  // right goal
+        ctx.strokeRect(field.x, field.hPad/2 - goal.h/2, goal.w, goal.h);  // left goal
+        ctx.strokeRect(field.w + field.x - goal.w, field.hPad/2 - goal.h/2, goal.w, goal.h);  // right goal
     }
     
     function drawBall(ctx, ball) {
@@ -84,12 +88,6 @@ Soccer.prototype.tick = function(time) {
         playerPos.y = Math.min(field.h + 10, playerPos.y);
     }
 
-    function clipBallPos(ball, field) {
-        ball.x = Math.max(0, ball.x);
-        ball.x = Math.min(field.wPad, ball.x);
-        ball.y = Math.max(10, ball.y);
-        ball.y = Math.min(field.h, ball.y);
-    }
 
     function updateTeam(team, teamPositions, opponentsPositions, ball, field) {
         var teamDirs = team.tick(teamPositions.slice(), opponentsPositions.slice(), { x: ball.x, y: ball.y });
@@ -106,22 +104,46 @@ Soccer.prototype.tick = function(time) {
             }
         });
     }
+
+    function clipBallPos(ball, field) {
+        ball.x = Math.max(0, ball.x);
+        ball.x = Math.min(field.w + 10, ball.x);
+        ball.y = Math.max(10, ball.y);
+        ball.y = Math.min(field.h + 10, ball.y);
+    }
+
+    function resetTeams(side) {
+        console.log('THeres a scooooore to ' + side + ' side');
+    }
     
-    function updateBall(ball, field) {
+    function updateBall(ball, field, goal, score) {
+        var goalLine = {
+            start: field.hPad/2 - goal.h/2,
+            end: field.hPad/2 - goal.h/2 + goal.h
+        };
         if (ball.timesKicked > 1) {
             ball.dir = Math.random() * Math.PI * 2;
-            ball.timesKicked = 0;
         }
-        ball.speed *= 0.9;
+        ball.timesKicked = 0;
         ball.x += Math.cos(-ball.dir) * ball.speed;
         ball.y += Math.sin(-ball.dir) * ball.speed;
-        ball.timesKicked = 0;
+        ball.speed *= 0.9;
+        // split into new function..
+        if (ball.x < 10 && ball.y > goalLine.start && ball.y < goalLine.end) {
+            score.left++;
+            resetTeams('left');
+        } else if (ball.x > field.w && ball.y > goalLine.start && ball.y < goalLine.end) {
+            score.right++;
+            resetTeams('right');
+        } else {
+            clipBallPos(ball, field);
+        }
     }
 
     updateTeam(this.team1, this.playersPosTeam1, this.playersPosTeam2, this.ball, this.field);
     updateTeam(this.team2, this.playersPosTeam2, this.playersPosTeam1, this.ball, this.field);
-    updateBall(this.ball);
-
+    updateBall(this.ball, this.field, this.goal, this.score);
+    
     this.draw();
 };
 
