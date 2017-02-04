@@ -94,6 +94,8 @@ Soccer.prototype.tick = function(time) {
         teamDirs.forEach(function(playerDir, index) {
             var variation = Math.random(); // + 0.3;
             var playerPos = teamPositions[index];
+            playerDir.speed = Math.max(playerDir.speed, 0);
+            playerDir.speed = Math.min(playerDir.speed, 3);
             playerPos.x += Math.cos(-playerDir.runDir) * playerDir.runSpeed * variation; // consider integrating over time
             playerPos.y += Math.sin(-playerDir.runDir) * playerDir.runSpeed * variation; // to be independent of refreshRate
             clipPlayerPos(playerPos, field);
@@ -125,6 +127,8 @@ Soccer.prototype.tick = function(time) {
             ball.dir = Math.random() * Math.PI * 2;
         }
         ball.timesKicked = 0;
+        ball.speed = Math.max(ball.speed, 0);
+        ball.speed = Math.min(ball.speed, 15);
         ball.x += Math.cos(-ball.dir) * ball.speed;
         ball.y += Math.sin(-ball.dir) * ball.speed;
         ball.speed *= 0.9;
