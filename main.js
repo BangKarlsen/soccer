@@ -126,17 +126,17 @@ Soccer.prototype.tick = function(time) {
 };
 
 var game = new Soccer();
-var now;
+var lastTime;
 
 function run(timestamp) {
     var refreshRate = 10; // millis
-    var interval = timestamp - now;
-    if (!now) {
-        now = timestamp;
+    var interval = timestamp - lastTime;
+    if (!lastTime) {
+        lastTime = timestamp;
     }
         
     if (interval > refreshRate) {    
-        now = timestamp;
+        lastTime = timestamp;
         game.tick(timestamp);
     }
     window.requestAnimationFrame(run);
