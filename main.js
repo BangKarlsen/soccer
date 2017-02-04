@@ -88,7 +88,6 @@ Soccer.prototype.tick = function(time) {
         playerPos.y = Math.min(field.h + 10, playerPos.y);
     }
 
-
     function updateTeam(team, teamPositions, opponentsPositions, ball, field) {
         var teamDirs = team.tick(teamPositions.slice(), opponentsPositions.slice(), { x: ball.x, y: ball.y });
         teamDirs.forEach(function(playerDir, index) {
@@ -107,17 +106,6 @@ Soccer.prototype.tick = function(time) {
         });
     }
 
-    function clipBallPos(ball, field) {
-        ball.x = Math.max(0, ball.x);
-        ball.x = Math.min(field.w + 10, ball.x);
-        ball.y = Math.max(10, ball.y);
-        ball.y = Math.min(field.h + 10, ball.y);
-    }
-
-    function resetTeams(sideHasBall) {
-        console.log('THeres a scooooore!! ' + sideHasBall + ' haz ball');
-    }
-    
     function updateBall(ball, field, goal, score) {
         if (ball.timesKicked > 1) {
             ball.dir = Math.random() * Math.PI * 2;
@@ -128,6 +116,17 @@ Soccer.prototype.tick = function(time) {
         ball.x += Math.cos(-ball.dir) * ball.speed;
         ball.y += Math.sin(-ball.dir) * ball.speed;
         ball.speed *= 0.9;
+    }
+
+    function resetTeams(sideHasBall) {
+        console.log('THeres a scooooore!! ' + sideHasBall + ' haz ball');
+    }
+    
+    function clipBallPos(ball, field) {
+        ball.x = Math.max(0, ball.x);
+        ball.x = Math.min(field.w + 10, ball.x);
+        ball.y = Math.max(10, ball.y);
+        ball.y = Math.min(field.h + 10, ball.y);
     }
 
     function updateScores(ball, field, goal, score) {
