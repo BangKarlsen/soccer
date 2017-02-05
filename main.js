@@ -3,8 +3,6 @@ function Soccer() {
     var canvas = document.getElementById('field');
     this.ctx = canvas.getContext('2d');
     this.field = { 
-        x: 0,
-        y: 0,
         w: canvas.getAttribute('width'), 
         h: canvas.getAttribute('height'),
     };
