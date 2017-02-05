@@ -154,9 +154,6 @@ Soccer.prototype.tick = function(time) {
     this.draw();
 };
 
-var game = new Soccer();
-var lastTime;
-
 function run(currentTime) {
     var refreshRate = 10; // millis
     var interval = currentTime - lastTime;
@@ -171,4 +168,6 @@ function run(currentTime) {
     window.requestAnimationFrame(run);
 }
 
+var game = new Soccer();
+var lastTime;
 window.requestAnimationFrame(run);
