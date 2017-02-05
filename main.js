@@ -3,12 +3,10 @@ function Soccer() {
     var canvas = document.getElementById('field');
     this.ctx = canvas.getContext('2d');
     this.field = { 
-        x: 10,
-        y: 10,
-        w: canvas.getAttribute('width') - 20, 
-        h: canvas.getAttribute('height') - 20,
-        wPad: canvas.getAttribute('width'),
-        hPad: canvas.getAttribute('height')
+        x: 0,
+        y: 0,
+        w: canvas.getAttribute('width'), 
+        h: canvas.getAttribute('height'),
     };
     this.goal = { 
         w: 40, 
@@ -42,12 +40,12 @@ Soccer.prototype.draw = function() {
         gradient.addColorStop(0.5, 'green');
         gradient.addColorStop(1, 'darkgreen');
         ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, field.wPad, field.hPad);                          // field grass
+        ctx.fillRect(0, 0, field.w, field.h);       // field grass
         ctx.strokeStyle = 'white';
-        ctx.strokeRect(field.x, field.y, field.w, field.h);                  // field outline
-        ctx.strokeRect(field.x + field.w/2 - 1, field.y, 2, field.h);        // center line
-        ctx.strokeRect(field.x, field.hPad/2 - goal.h/2, goal.w, goal.h);  // left goal
-        ctx.strokeRect(field.w + field.x - goal.w, field.hPad/2 - goal.h/2, goal.w, goal.h);  // right goal
+        ctx.strokeRect(0, 0, field.w, field.h);                  // field outline
+        ctx.strokeRect(field.w/2 - 1, 0, 2, field.h);        // center line
+        ctx.strokeRect(0, field.h/2 - goal.h/2, goal.w, goal.h);  // left goal
+        ctx.strokeRect(field.w - goal.w, field.h/2 - goal.h/2, goal.w, goal.h);  // right goal
     }
     
     function drawBall(ctx, ball) {
@@ -82,10 +80,10 @@ Soccer.prototype.tick = function(time) {
     }
 
     function clipPlayerPos(playerPos, field) {
-        playerPos.x = Math.max(10, playerPos.x);
-        playerPos.x = Math.min(field.w + 10, playerPos.x);
-        playerPos.y = Math.max(10, playerPos.y);
-        playerPos.y = Math.min(field.h + 10, playerPos.y);
+        playerPos.x = Math.max(0, playerPos.x);
+        playerPos.x = Math.min(field.w, playerPos.x);
+        playerPos.y = Math.max(0, playerPos.y);
+        playerPos.y = Math.min(field.h, playerPos.y);
     }
 
     function updateTeam(team, teamPositions, opponentsPositions, ball, field) {
@@ -124,15 +122,15 @@ Soccer.prototype.tick = function(time) {
     
     function clipBallPos(ball, field) {
         ball.x = Math.max(0, ball.x);
-        ball.x = Math.min(field.w + 10, ball.x);
+        ball.x = Math.min(field.w, ball.x);
         ball.y = Math.max(10, ball.y);
-        ball.y = Math.min(field.h + 10, ball.y);
+        ball.y = Math.min(field.h, ball.y);
     }
 
     function updateScores(ball, field, goal, score) {
         var goalLine = {
-            start: field.hPad/2 - goal.h/2,
-            end: field.hPad/2 - goal.h/2 + goal.h
+            start: field.h/2 - goal.h/2,
+            end: field.h/2 - goal.h/2 + goal.h
         };
         var isInGoal = ball.y > goalLine.start && ball.y < goalLine.end;
         if (ball.x < 10 && isInGoal) {
