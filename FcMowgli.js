@@ -19,8 +19,8 @@ function createFcMowgli() {
         
         function goalPos() {
             return {
-                x: side === 'left' ? 0 : fieldW,
-                y: fieldH / 2
+                x: side === 'left' ? -50 : fieldW + 50,
+                y: fieldH / 2 + 45
             };
         }
         
@@ -58,7 +58,7 @@ function createFcMowgli() {
             });
             if (badIdea) {
                 // should pass to fellow player
-                return { dir: goalDir - 0.9, speed: 5 };
+                return { dir: goalDir - 0.9, speed: 10 };
             } else {
                 // shoot at goal
                 return { dir: goalDir, speed: 15 };
