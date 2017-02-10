@@ -1,14 +1,14 @@
 function createFcKogle() {
     function FcKogle(side, fieldW, fieldH) {
         this.side = side;
-        this.fieldW = fieldW; 
+        this.fieldW = fieldW;
         this.fieldH = fieldH;
         this.name = 'FC Kogle';
         this.color = 'orange';
         console.log('Created ' + this.color + ' team: ' + this.name);
     }
 
-    FcKogle.prototype.tick = function(players, opponents, ball) {
+    FcKogle.prototype.tick = function (players, opponents, ball) {
         function dist(a, b) {
             return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
         }
@@ -16,14 +16,14 @@ function createFcKogle() {
         function dir(from, to) {
             return -Math.atan2(to.y - from.y, to.x - from.x);
         }
-        
+
         function goalPos() {
             return {
                 x: side === 'left' ? 0 : fieldW,
                 y: fieldH / 2
             };
         }
-        
+
         function opponentGoalPos() {
             return {
                 x: side === 'left' ? fieldW : 0,
@@ -43,7 +43,7 @@ function createFcKogle() {
             });
             if (!closestPlayer) {
                 console.log('No closests player found. is ball ok?');
-            } 
+            }
             return closestPlayer;
         }
 
@@ -76,12 +76,12 @@ function createFcKogle() {
                 kickSpeed: 15
             };
         }
-        
+
         var side = this.side;
-        var fieldW = this.fieldW; 
-        var fieldH = this.fieldH;    
+        var fieldW = this.fieldW;
+        var fieldH = this.fieldH;
         // addNames(players);
-        players.forEach(function(player, index) {
+        players.forEach(function (player, index) {
             players[index] = {
                 x: player.x,
                 y: player.y,
