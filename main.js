@@ -24,7 +24,7 @@ function Soccer() {
     this.playersTeam1 = [{ x: 200, y: 100 }, { x: 200, y: 200 }, { x: 200, y: 300 }, { x: 200, y: 350 }];
     this.playersTeam2 = [{ x: 500, y: 100 }, { x: 500, y: 200 }, { x: 500, y: 300 }, { x: 500, y: 350 }];
 
-    // Find a better way to instatiate teams, some kind of dependecy injection..
+    // Find a better way to instatiate teams, some kind of dependency injection..
     var t1 = createFcMowgli();
     var t2 = createFcKogle();
     this.team1 = new t1('left', this.field.w, this.field.h);
