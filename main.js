@@ -100,6 +100,8 @@ Soccer.prototype.tick = function (time) {
 
     function updatePosition(player) {
         var variation = Math.min(Math.random() + 0.04, 1);
+        player.runDir = player.runDir || 0;
+        player.runSpeed = player.runSpeed || 0;
         player.x += Math.cos(-player.runDir) * player.runSpeed * variation; // consider integrating over time
         player.y += Math.sin(-player.runDir) * player.runSpeed * variation; // to be independent of refreshRate
     }
