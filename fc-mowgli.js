@@ -19,8 +19,8 @@ function createFcMowgli() {
         
         function goalPos() {
             return {
-                x: side === 'left' ? -50 : fieldW + 50,
-                y: fieldH / 2 + 45
+                x: side === 'left' ? 0 : fieldW,
+                y: fieldH / 2
             };
         }
         
