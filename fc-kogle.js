@@ -57,11 +57,13 @@ function createFcKogle() {
             });
         }
 
-        function updateGoalie(goalie) {
+        function updateGoalie(goalie, ball) {
             var goaldir;
+            var runDir;
             var runSpeed = 3;
-            if (dist(goalie, ball) < 25) {
-
+            if (dist(goalie, ball) < 100) {
+                // run to ball and kick it away
+                runDir = dir(goalie, ball);
             } else if (dist(goalie, goalPos()) > 15) {
                 runDir = dir(goalie, goalPos());
             } else {
@@ -75,22 +77,21 @@ function createFcKogle() {
             };
         }
         
-
-        var runDir = this.side === 'left' ? 0 : Math.PI;
         var side = this.side;
         var fieldW = this.fieldW; 
         var fieldH = this.fieldH;    
-        addNames(players);
-        // playerDirs[1] = updateGoalie(playersPos[1]);
-
+        // addNames(players);
         players.forEach(function(player, index) {
             players[index] = {
+                x: player.x,
+                y: player.y,
                 runDir: dir(player, goalPos()),
                 runSpeed: 3,
                 kickDir: Math.PI,
                 kickSpeed: 15
             };
         });
+        players[1] = updateGoalie(players[1], ball);
         return players;
     }
 
