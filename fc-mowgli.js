@@ -8,7 +8,7 @@ function createFcMowgli() {
         console.log('Created ' + this.color + ' team: ' + this.name);
     }
 
-    FcMowgli.prototype.tick = function(playersPos, opponentsPos, ball) {
+    FcMowgli.prototype.tick = function(players, opponents, ball) {
         function dist(a, b) {
             return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
         }
@@ -31,11 +31,11 @@ function createFcMowgli() {
             };
         }
 
-        function updateGoalie(goaliePos) {
+        function updateGoalie(goalie) {
             var runDir = 0;
             var runSpeed = 3; 
-            if (dist(goaliePos, goalPos()) > 15) {
-                runDir = dir(goaliePos, goalPos());
+            if (dist(goalie, goalPos()) > 15) {
+                runDir = dir(goalie, goalPos());
             } else {
                 runSpeed = 0;
             }
@@ -47,12 +47,12 @@ function createFcMowgli() {
             };
         }
 
-        function getBestKick(playerPos, opponentsPos, goalPos) {
-            var goalDir = dir(playerPos, goalPos);
+        function getBestKick(players, opponents, goalPos) {
+            var goalDir = dir(players, goalPos);
             var badIdea = false;
-            opponentsPos.forEach(function(opponentPos) {
-                var opponentDir = dir(playerPos, opponentPos);
-                if (Math.abs(opponentDir - goalDir) < 0.2 && dist(playerPos, opponentPos) < 40) {
+            opponents.forEach(function(opponent) {
+                var opponentDir = dir(players, opponent);
+                if (Math.abs(opponentDir - goalDir) < 0.2 && dist(players, opponent) < 40) {
                     badIdea = true;
                 }
             });
@@ -65,44 +65,43 @@ function createFcMowgli() {
             }
         }
 
-        var playerDirs = [{}, {}, {}, {}];
         var runDir = this.side === 'left' ? 0 : Math.PI;
         var side = this.side;
         var fieldW = this.fieldW; 
         var fieldH = this.fieldH;        
 
         // Player 0 is goal keeper
-        playerDirs[0] = updateGoalie(playersPos[0]);
+        players[0] = updateGoalie(players[0]);
 
         // Find player closest to ball
         var minDist = 99999;
         var bestPlayerIndex = 3;
-        playersPos.forEach(function(player, index) {
+        players.forEach(function(player, index) {
             var playerBallDist = dist(player, ball);
             if (playerBallDist < minDist) {
                 minDist = playerBallDist;
                 bestPlayerIndex = index;
             }    
         });
-        var bestKick = getBestKick(playersPos[bestPlayerIndex], opponentsPos, opponentGoalPos());
-        playerDirs[bestPlayerIndex] = {
-                runDir: dir(playersPos[bestPlayerIndex], ball),
+        var bestKick = getBestKick(players[bestPlayerIndex], opponents, opponentGoalPos());
+        players[bestPlayerIndex] = {
+                runDir: dir(players[bestPlayerIndex], ball),
                 runSpeed: 3,
                 kickDir: bestKick.dir,
                 kickSpeed: bestKick.speed
             }
 
-        playersPos.forEach(function(player, index) {
+        players.forEach(function(player, index) {
             if (index != 0 && index != bestPlayerIndex) {
-                playerDirs[index] = {
+                players[index] = {
                     runDir: runDir,
-                    runSpeed: 3,
+                    runSpeed: 2,
                     kickDir: runDir,
                     kickSpeed: 4
                 };
             }
         });
-        return playerDirs;
+        return players;
     }
 
     return FcMowgli;

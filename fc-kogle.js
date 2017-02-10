@@ -8,7 +8,7 @@ function createFcKogle() {
         console.log('Created ' + this.color + ' team: ' + this.name);
     }
 
-    FcKogle.prototype.tick = function(playersPos, opponentsPos, ball) {
+    FcKogle.prototype.tick = function(players, opponents, ball) {
         function dist(a, b) {
             return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
         }
@@ -75,23 +75,23 @@ function createFcKogle() {
             };
         }
         
-        var playerDirs = [];
+
         var runDir = this.side === 'left' ? 0 : Math.PI;
         var side = this.side;
         var fieldW = this.fieldW; 
         var fieldH = this.fieldH;    
-        // addNames(playersPos);
+        addNames(players);
         // playerDirs[1] = updateGoalie(playersPos[1]);
 
-        playersPos.forEach(function(player) {
-            playerDirs.push({
+        players.forEach(function(player, index) {
+            players[index] = {
                 runDir: dir(player, goalPos()),
                 runSpeed: 3,
                 kickDir: Math.PI,
                 kickSpeed: 15
-            });
+            };
         });
-        return playerDirs;
+        return players;
     }
 
     return FcKogle;
