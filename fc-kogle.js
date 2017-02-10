@@ -51,20 +51,27 @@ function createFcKogle() {
             return player.name === findClosestPlayerToBall(players, ball).name;
         }
 
-        function addNames(players) {
-            players.forEach(function (player, index) {
-                player.name = '' + index;
-            });
+        function addRoles(players) {
+            players[0].role = 'defender';
+            players[1].role = 'goalie';
+            players[2].role = 'attacker';
+            players[3].role = 'defender';
         }
 
-        function updateGoalie(goalie, ball) {
+        function findBestDefender(goalie, players) {
+
+        }
+
+        function updateGoalie(goalie, players, ball) {
             var goaldir;
             var runDir;
             var runSpeed = 3;
             if (dist(goalie, ball) < 100) {
                 // run to ball and kick it away
                 runDir = dir(goalie, ball);
-            } else if (dist(goalie, goalPos()) > 15) {
+                // kick it to player
+                var player = findBestDefender(goalie, players);
+            } else if (dist(goalie, goalPos()) > 20) {
                 runDir = dir(goalie, goalPos());
             } else {
                 runSpeed = 0;
@@ -80,18 +87,18 @@ function createFcKogle() {
         var side = this.side;
         var fieldW = this.fieldW;
         var fieldH = this.fieldH;
-        // addNames(players);
+        addRoles(players);
         players.forEach(function (player, index) {
             players[index] = {
                 x: player.x,
                 y: player.y,
-                runDir: dir(player, goalPos()),
+                runDir: dir(player, ball),
                 runSpeed: 3,
-                kickDir: Math.PI,
+                kickDir: dir(player, opponentGoalPos()),
                 kickSpeed: 15
             };
         });
-        players[1] = updateGoalie(players[1], ball);
+        players[1] = updateGoalie(players[1], players, ball);
         return players;
     }
 
