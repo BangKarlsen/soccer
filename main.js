@@ -4,7 +4,7 @@ function Soccer() {
     this.ctx = canvas.getContext('2d');
     this.field = { 
         w: canvas.getAttribute('width'), 
-        h: canvas.getAttribute('height'),
+        h: canvas.getAttribute('height')
     };
     this.goal = { 
         w: 40, 
@@ -21,15 +21,15 @@ function Soccer() {
         left: 0,
         right: 0
     };
+    this.playersTeam1 = [{x: 200, y: 100}, {x: 200, y: 200}, {x: 200, y: 300}, {x: 200, y: 350}];
+    this.playersTeam2 = [{x: 500, y: 100}, {x: 500, y: 200}, {x: 500, y: 300}, {x: 500, y: 350}];
 
-    // Find a better way to instatiate teams... hm.
+    // Find a better way to instatiate teams, some kind of dependecy injection..
     var t1 = createFcMowgli();
     var t2 = createFcKogle();
     this.team1 = new t1('left', this.field.w, this.field.h);
     this.team2 = new t2('right', this.field.w, this.field.h);
 
-    this.playersPosTeam1 = [{x: 200, y: 100}, {x: 200, y: 200}, {x: 200, y: 300}, {x: 200, y: 350}];
-    this.playersPosTeam2 = [{x: 500, y: 100}, {x: 500, y: 200}, {x: 500, y: 300}, {x: 500, y: 350}];
 };
 
 Soccer.prototype.draw = function() {
@@ -55,9 +55,9 @@ Soccer.prototype.draw = function() {
         ctx.stroke();
     }
 
-    function drawTeam(ctx, team, teamPositions) {
+    function drawTeam(ctx, team, players) {
         ctx.fillStyle = team.color;
-        teamPositions.forEach(function (player) {
+        players.forEach(function (player) {
             ctx.beginPath();
             ctx.arc(player.x, player.y, 10, 0, Math.PI*2);
             ctx.fill();
@@ -68,8 +68,8 @@ Soccer.prototype.draw = function() {
 
     drawField(this.ctx, this.field, this.goal);
     drawBall(this.ctx, this.ball);
-    drawTeam(this.ctx, this.team1, this.playersPosTeam1);
-    drawTeam(this.ctx, this.team2, this.playersPosTeam2);
+    drawTeam(this.ctx, this.team1, this.playersTeam1);
+    drawTeam(this.ctx, this.team2, this.playersTeam2);
 };
 
 Soccer.prototype.tick = function(time) {
@@ -77,27 +77,31 @@ Soccer.prototype.tick = function(time) {
         return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
     }
 
-    function clipPlayerPos(playerPos, field) {
-        playerPos.x = Math.max(0, playerPos.x);
-        playerPos.x = Math.min(field.w, playerPos.x);
-        playerPos.y = Math.max(0, playerPos.y);
-        playerPos.y = Math.min(field.h, playerPos.y);
+    function clipPlayer(player, field) {
+        player.x = Math.max(0, player.x);
+        player.x = Math.min(field.w, player.x);
+        player.y = Math.max(0, player.y);
+        player.y = Math.min(field.h, player.y);
     }
 
-    function updateTeam(team, teamPositions, opponentsPositions, ball, field) {
-        var teamDirs = team.tick(teamPositions.slice(), opponentsPositions.slice(), { x: ball.x, y: ball.y });
-        teamDirs.forEach(function(playerDir, index) {
+    function updateTeam(team, players, opponents, ball, field) {
+        var updatedPlayers = team.tick(players.slice(), opponents.slice(), { x: ball.x, y: ball.y });
+        updatedPlayers.forEach(function(updatedPlayer, index) {
             var variation = Math.min(Math.random() + 0.04, 1);
-            var playerPos = teamPositions[index];
-            playerDir.speed = Math.max(playerDir.speed, 0);
-            playerDir.speed = Math.min(playerDir.speed, 3);
-            playerPos.x += Math.cos(-playerDir.runDir) * playerDir.runSpeed * variation; // consider integrating over time
-            playerPos.y += Math.sin(-playerDir.runDir) * playerDir.runSpeed * variation; // to be independent of refreshRate
-            clipPlayerPos(playerPos, field);
-            if (dist(playerPos, ball) < 10) {
+            var player = players[index];
+            updatedPlayer.runSpeed = Math.max(updatedPlayer.runSpeed, 0);
+            updatedPlayer.runSpeed = Math.min(updatedPlayer.runSpeed, 3);
+            player.runSpeed = updatedPlayer.runSpeed;
+            player.runDir = updatedPlayer.runDir;
+            player.kickDir = updatedPlayer.kickDir;
+            player.kickSpeed = updatedPlayer.kickSpeed;
+            player.x += Math.cos(-player.runDir) * player.runSpeed * variation; // consider integrating over time
+            player.y += Math.sin(-player.runDir) * player.runSpeed * variation; // to be independent of refreshRate
+            clipPlayer(player, field);
+            if (dist(player, ball) < 10) {
                 ball.timesKicked++;
-                ball.dir = playerDir.kickDir;
-                ball.speed = playerDir.kickSpeed;
+                ball.dir = player.kickDir;
+                ball.speed = player.kickSpeed;
             }
         });
     }
@@ -138,34 +142,45 @@ Soccer.prototype.tick = function(time) {
         return scoringTeam;
     }
 
-    function resetTeams(playersPosTeam1, playersPosTeam2, ball) {
+    function resetPlayer(player) {
+        player.x = 0;
+        player.y = 0;
+        player.runDir = 0;
+        player.runSpeed = 0;
+        player.kickDir = 0;
+        player.kickSpeed = 0;
+    }
+
+    function resetTeams(playersTeam1, playersTeam2, ball) {
         ball.x = 350;
         ball.y = 200;
         ball.speed = 0;
-        playersPosTeam1.forEach(function (playerPos, index) {
-            playerPos.x = 200;
-            playerPos.y = 50 + index * 100;
+        playersTeam1.forEach(function (player, index) {
+            resetPlayer(player);
+            player.x = 200;
+            player.y = 50 + index * 100;
         });
-        playersPosTeam2.forEach(function (playerPos, index) {
-            playerPos.x = 500;
-            playerPos.y = 50 + index * 100;
+        playersTeam2.forEach(function (player, index) {
+            resetPlayer(player);
+            player.x = 500;
+            player.y = 50 + index * 100;
         });
     }
 
-    function updateScore(scoringTeam, score, playersPosTeam1, playersPosTeam2, ball) {
+    function updateScore(scoringTeam, score, playersTeam1, playersTeam2, ball) {
         if (scoringTeam) {
             score[scoringTeam]++;
             console.log('Score is now ' + score.left + ' - ' + score.right + ' (' + scoringTeam + ' scored)');
-            resetTeams(playersPosTeam1, playersPosTeam2, ball);
+            resetTeams(playersTeam1, playersTeam2, ball);
         }
     }
 
     var scoringTeam;
-    updateTeam(this.team1, this.playersPosTeam1, this.playersPosTeam2, this.ball, this.field);
-    updateTeam(this.team2, this.playersPosTeam2, this.playersPosTeam1, this.ball, this.field);
+    updateTeam(this.team1, this.playersTeam1, this.playersTeam2, this.ball, this.field);
+    updateTeam(this.team2, this.playersTeam2, this.playersTeam1, this.ball, this.field);
     updateBall(this.ball);
     scoringTeam = checkScores(this.ball, this.field, this.goal);
-    updateScore(scoringTeam, this.score, this.playersPosTeam1, this.playersPosTeam2, this.ball);
+    updateScore(scoringTeam, this.score, this.playersTeam1, this.playersTeam2, this.ball);
     
     this.draw();
 };

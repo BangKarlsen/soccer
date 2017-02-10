@@ -52,7 +52,7 @@ function createFcMowgli() {
             var badIdea = false;
             opponentsPos.forEach(function(opponentPos) {
                 var opponentDir = dir(playerPos, opponentPos);
-                if (Math.abs(opponentDir - goalDir) < 0.2) {
+                if (Math.abs(opponentDir - goalDir) < 0.2 && dist(playerPos, opponentPos) < 40) {
                     badIdea = true;
                 }
             });
