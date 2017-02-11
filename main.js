@@ -195,8 +195,8 @@ Soccer.prototype.tick = function (time) {
         }
     }
 
-    function updateScores(score, players, ball) {
-        var scoringTeam = checkScores(this.ball, this.field, this.goal);
+    function updateScores(score, players, ball, field, goal) {
+        var scoringTeam = checkScores(ball, field, goal);
         if (scoringTeam) {
             score[scoringTeam]++;
             console.log('Score is now ' + score.left + ' - ' + score.right + ' (' + scoringTeam + ' scored)');
@@ -207,7 +207,7 @@ Soccer.prototype.tick = function (time) {
     updateTeam(this.team1, this.players[this.team1.side], this.players[this.team2.side], this.ball, this.field);
     updateTeam(this.team2, this.players[this.team2.side], this.players[this.team1.side], this.ball, this.field);
     updateBall(this.ball);
-    updateScores(this.score, this.players, this.ball);
+    updateScores(this.score, this.players, this.ball, this.field, this.goal);
 
     this.draw();
 };
