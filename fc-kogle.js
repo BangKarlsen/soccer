@@ -47,34 +47,59 @@ function createFcKogle() {
             return closestPlayer;
         }
 
-        function isClosestsPlayerToBall(player, players, ball) {
-            return player.name === findClosestPlayerToBall(players, ball).name;
+        function isClosestsToBall(player, players, ball) {
+            return player.role === findClosestPlayerToBall(players, ball).role;
         }
 
         function addRoles(players) {
-            players[0].role = 'defender';
-            players[1].role = 'goalie';
+            players[0].role = 'goalie';
+            players[1].role = 'middle';
             players[2].role = 'attacker';
             players[3].role = 'defender';
         }
 
-        function findBestDefender(goalie, players) {
-
+        function findBestRecieverDir(goalie, players) {
+            return Math.PI;
         }
 
         function updateGoalie(goalie, players, ball) {
             var goaldir;
             var runDir;
             var runSpeed = 3;
-            if (dist(goalie, ball) < 100) {
+            var kickDir;
+            if (dist(goalie, ball) < 100 && isClosestsToBall(goalie, players, ball)) {
                 // run to ball and kick it away
                 runDir = dir(goalie, ball);
                 // kick it to player
-                var player = findBestDefender(goalie, players);
+                kickDir = findBestRecieverDir(goalie, players);
             } else if (dist(goalie, goalPos()) > 20) {
                 runDir = dir(goalie, goalPos());
             } else {
                 runSpeed = 0;
+            }
+            return {
+                runDir: runDir,
+                runSpeed: runSpeed,
+                kickDir: kickDir,
+                kickSpeed: 15
+            };
+        }
+
+        function updateDefender(defender, players, ball, closestsToBall) {
+            var runDir;
+            var runSpeed = 3;
+            var defendSpot = { x: 600, y: fieldH / 2 };
+            if (isClosestsToBall(defender, players, ball)) {
+                // run to ball and kick it away
+                runDir = dir(defender, ball);
+                // kick it to player
+                // find good kick dir..
+            } else if(dist(defender, defendSpot) > 10) {
+                runDir = dir(defender, defendSpot);
+                runSpeed = 3;
+            } else {
+                runDir = dir(defender, defendSpot);
+                runSpeed = 0.5;
             }
             return {
                 runDir: runDir,
@@ -87,18 +112,19 @@ function createFcKogle() {
         var side = this.side;
         var fieldW = this.fieldW;
         var fieldH = this.fieldH;
-        addRoles(players);
         players.forEach(function (player, index) {
             players[index] = {
                 x: player.x,
                 y: player.y,
                 runDir: dir(player, ball),
-                runSpeed: 3,
+                runSpeed: 0,
                 kickDir: dir(player, opponentGoalPos()),
                 kickSpeed: 15
             };
         });
-        players[1] = updateGoalie(players[1], players, ball);
+        addRoles(players);
+        players[0] = updateGoalie(players[0], players, ball);
+        players[3] = updateDefender(players[3], players, ball);
         return players;
     }
 
