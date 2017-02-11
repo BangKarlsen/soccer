@@ -21,8 +21,10 @@ function Soccer() {
         left: 0,
         right: 0
     };
-    this.playersTeam1 = [{ x: 200, y: 100 }, { x: 200, y: 200 }, { x: 200, y: 300 }, { x: 200, y: 350 }];
-    this.playersTeam2 = [{ x: 500, y: 100 }, { x: 500, y: 200 }, { x: 500, y: 300 }, { x: 500, y: 350 }];
+    this.players = {
+        left : [{ x: 200, y: 100 }, { x: 200, y: 200 }, { x: 200, y: 300 }, { x: 200, y: 350 }],
+        right : [{ x: 500, y: 100 }, { x: 500, y: 200 }, { x: 500, y: 300 }, { x: 500, y: 350 }]
+    };
 
     // Find a better way to instatiate teams, some kind of dependency injection..
     var t1 = createFcMowgli();
@@ -68,8 +70,8 @@ Soccer.prototype.draw = function () {
 
     drawField(this.ctx, this.field, this.goal);
     drawBall(this.ctx, this.ball);
-    drawTeam(this.ctx, this.team1, this.playersTeam1);
-    drawTeam(this.ctx, this.team2, this.playersTeam2);
+    drawTeam(this.ctx, this.team1, this.players[this.team1.side]);
+    drawTeam(this.ctx, this.team2, this.players[this.team2.side]);
 };
 
 Soccer.prototype.tick = function (time) {
@@ -171,36 +173,43 @@ Soccer.prototype.tick = function (time) {
         player.kickSpeed = 0;
     }
 
-    function resetTeams(playersTeam1, playersTeam2, ball) {
-        ball.x = 350;
-        ball.y = 200;
-        ball.speed = 0;
-        playersTeam1.forEach(function (player, index) {
+    function resetTeam(players, distCenterLine) {
+        players.forEach(function (player, index) {
             resetPlayer(player);
-            player.x = 200;
-            player.y = 50 + index * 100;
-        });
-        playersTeam2.forEach(function (player, index) {
-            resetPlayer(player);
-            player.x = 500;
+            player.x = distCenterLine;
             player.y = 50 + index * 100;
         });
     }
 
-    function updateScore(scoringTeam, score, playersTeam1, playersTeam2, ball) {
+    function resetTeams(scoringTeam, players, ball) {
+        ball.x = 350;
+        ball.y = 200;
+        ball.speed = 0;
+        if (scoringTeam === 'left') {
+            resetTeam(players.right, 360);
+            resetTeam(players.left, 150);
+        } else {
+            resetTeam(players.right, 550);
+            resetTeam(players.left, 340);
+        }
+    }
+
+    function updateScore(scoringTeam, score, players, ball) {
+        var losingTeam;
         if (scoringTeam) {
             score[scoringTeam]++;
-            console.log('Score is now ' + score.left + ' - ' + score.right + ' (' + scoringTeam + ' scored)');
-            resetTeams(playersTeam1, playersTeam2, ball);
+            losingTeam = scoringTeam === 'left' ? 'right' : 'left';
+            console.log('Score is now ' + score.left + ' - ' + score.right + ' (' + scoringTeam + ' scored, ' + losingTeam + ' lost' + ')');
+            resetTeams(scoringTeam, players, ball);
         }
     }
 
     var scoringTeam;
-    updateTeam(this.team1, this.playersTeam1, this.playersTeam2, this.ball, this.field);
-    updateTeam(this.team2, this.playersTeam2, this.playersTeam1, this.ball, this.field);
+    updateTeam(this.team1, this.players[this.team1.side], this.players[this.team2.side], this.ball, this.field);
+    updateTeam(this.team2, this.players[this.team2.side], this.players[this.team1.side], this.ball, this.field);
     updateBall(this.ball);
     scoringTeam = checkScores(this.ball, this.field, this.goal);
-    updateScore(scoringTeam, this.score, this.playersTeam1, this.playersTeam2, this.ball);
+    updateScore(scoringTeam, this.score, this.players, this.ball);
 
     this.draw();
 };
