@@ -195,11 +195,9 @@ Soccer.prototype.tick = function (time) {
     }
 
     function updateScore(scoringTeam, score, players, ball) {
-        var losingTeam;
         if (scoringTeam) {
             score[scoringTeam]++;
-            losingTeam = scoringTeam === 'left' ? 'right' : 'left';
-            console.log('Score is now ' + score.left + ' - ' + score.right + ' (' + scoringTeam + ' scored, ' + losingTeam + ' lost' + ')');
+            console.log('Score is now ' + score.left + ' - ' + score.right + ' (' + scoringTeam + ' scored)');
             resetTeams(scoringTeam, players, ball);
         }
     }
