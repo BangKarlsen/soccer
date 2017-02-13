@@ -51,11 +51,18 @@ function createFcKogle() {
             return player.role === findClosestPlayerToBall(players, ball).role;
         }
 
-        function addRoles(players) {
+        function setupRoles(players) {
+            var roles = {
+                'goalie': players[0],
+                'middle': players[1],
+                'attacker': players[2],
+                'defender': players[3]
+            }
             players[0].role = 'goalie';
             players[1].role = 'middle';
             players[2].role = 'attacker';
             players[3].role = 'defender';
+            return roles;
         }
 
         function findBestRecieverDir(goalie, players) {
@@ -88,13 +95,13 @@ function createFcKogle() {
         function updateDefender(defender, players, ball, closestsToBall) {
             var runDir;
             var runSpeed = 3;
-            var defendSpot = { x: 600, y: fieldH / 2 };
+            var defendSpot = { x: 550, y: fieldH / 2 };
             if (isClosestsToBall(defender, players, ball)) {
                 // run to ball and kick it away
                 runDir = dir(defender, ball);
                 // kick it to player
                 // find good kick dir..
-            } else if(dist(defender, defendSpot) > 10) {
+            } else if(dist(defender, defendSpot) > 30) {
                 runDir = dir(defender, defendSpot);
                 runSpeed = 3;
             } else {
@@ -107,6 +114,52 @@ function createFcKogle() {
                 kickDir: Math.PI,
                 kickSpeed: 15
             };
+        }
+
+        function isOpponentBlocking(player, reciever, opponents) {
+            var blocked = false;
+            var recieverDir = dir(player, reciever);
+            opponents.forEach(function (opponent) {
+                var opponentDir = dir(players, opponent);
+                if (Math.abs(opponentDir - recieverDir) < 0.2 && dist(player, opponent) < dist(player, reciever)) {
+                    blocked = true;
+                    console.log(player.role + ' is blocked trying to pass to ' + reciever.role);
+                }
+            });
+        }
+
+        function updateCenter(center, players, opponents, ball) {
+            var runDir;
+            var runSpeed = 3;
+            var kickDir = Math.PI;
+            var cSpot = { 
+                x: fieldW / 2,
+                y: ball.y < fieldH / 2 ? fieldH / 3 : fieldH - fieldH / 3 
+            };
+            var attacker = roles['attacker'];
+            if (isClosestsToBall(center, players, ball)) {
+                // run to ball and kick it away
+                console.log('center is clostst to ball')
+                runDir = dir(center, ball);
+                if(!isOpponentBlocking(center, attacker, opponents)) {
+                    if (attacker.x < center.x) {
+                        kickDir = dir(center, attacker);
+                    }
+                }
+            } else if(dist(center, cSpot) > 30) {
+                runDir = dir(center, cSpot);
+                runSpeed = 3;
+            } else {
+                runDir = dir(center, cSpot);
+                runSpeed = 1;
+            }
+            return {
+                runDir: runDir,
+                runSpeed: runSpeed,
+                kickDir: kickDir,
+                kickSpeed: 15
+            };
+
         }
 
         var side = this.side;
@@ -122,9 +175,10 @@ function createFcKogle() {
                 kickSpeed: 15
             };
         });
-        addRoles(players);
+        var roles = setupRoles(players);
         players[0] = updateGoalie(players[0], players, ball);
-        players[3] = updateDefender(players[3], players, ball);
+        players[1] = updateDefender(players[1], players, ball);
+        players[3] = updateCenter(players[3], players, opponents, ball);
         return players;
     }
 
