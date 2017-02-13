@@ -170,7 +170,7 @@ function createFcKogle() {
                 x: player.x,
                 y: player.y,
                 runDir: dir(player, ball),
-                runSpeed: 0,
+                runSpeed: 3,
                 kickDir: dir(player, opponentGoalPos()),
                 kickSpeed: 15
             };
