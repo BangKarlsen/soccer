@@ -139,7 +139,6 @@ function createFcKogle() {
             var attacker = roles['attacker'];
             if (isClosestsToBall(center, players, ball)) {
                 // run to ball and kick it away
-                console.log('center is clostst to ball')
                 runDir = dir(center, ball);
                 if(!isOpponentBlocking(center, attacker, opponents)) {
                     if (attacker.x < center.x) {
