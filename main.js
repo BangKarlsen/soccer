@@ -58,13 +58,24 @@ Soccer.prototype.draw = function () {
     }
 
     function drawTeam(ctx, team, players) {
-        ctx.fillStyle = team.color;
-        players.forEach(function (player) {
+        var drawPlayerNumber = true;
+        players.forEach(function (player, index) {
+            ctx.fillStyle = team.color;
             ctx.beginPath();
             ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
             ctx.fill();
             ctx.strokeStyle = 'black';
             ctx.stroke();
+            if (drawPlayerNumber) {
+                // ctx.beginPath();
+                // ctx.lineTo( Math.cos(-player.runDir) * player.runSpeed,  Math.sin(-player.runDir) * player.runSpeed);
+                // ctx.strokeStyle = 'red';
+                // ctx.stroke();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'white';
+                ctx.fillText(index, player.x, player.y - 1);
+            }
         });
     }
 
