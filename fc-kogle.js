@@ -52,16 +52,15 @@ function createFcKogle() {
         }
 
         function setupRoles(players) {
-            var roles = {
-                'goalie': players[0],
-                'center': players[1],
-                'attacker': players[2],
-                'defender': players[3]
-            }
+            var roles = {};
             players[0].role = 'goalie';
             players[1].role = 'center';
             players[2].role = 'attacker';
             players[3].role = 'defender';
+            roles[players[0].role] = players[0];
+            roles[players[1].role] = players[1];
+            roles[players[2].role] = players[2];
+            roles[players[3].role] = players[3];
             return roles;
         }
 
