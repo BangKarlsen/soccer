@@ -165,7 +165,7 @@ Soccer.prototype.tick = function (time) {
             end: field.h / 2 - goal.h / 2 + goal.h
         };
         var isInGoal = ball.y > goalLine.start && ball.y < goalLine.end;
-        if (ball.x < 10 && isInGoal) {
+        if (ball.x < 0 && isInGoal) {
             scoringTeam = 'right';
         } else if (ball.x > field.w && isInGoal) {
             scoringTeam = 'left';
