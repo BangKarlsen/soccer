@@ -1,4 +1,4 @@
-function createFcMowgli() {
+function defineFcMowgli() {
     function FcMowgli(side, fieldW, fieldH) {
         this.side = side;
         this.fieldW = fieldW;

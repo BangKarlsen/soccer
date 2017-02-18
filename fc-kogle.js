@@ -1,4 +1,4 @@
-function createFcKogle() {
+function defineFcKogle() {
     function FcKogle(side, fieldW, fieldH) {
         this.side = side;
         this.fieldW = fieldW;

@@ -1,5 +1,4 @@
-
-function Soccer() {
+function Soccer(leftTeam, rightTeam) {
     var canvas = document.getElementById('field');
     this.ctx = canvas.getContext('2d');
     this.field = {
@@ -22,16 +21,12 @@ function Soccer() {
         right: 0
     };
     this.players = {
-        left : [{ x: 200, y: 100 }, { x: 200, y: 200 }, { x: 200, y: 300 }, { x: 200, y: 350 }],
-        right : [{ x: 500, y: 100 }, { x: 500, y: 200 }, { x: 500, y: 300 }, { x: 500, y: 350 }]
+        left: [{ x: 200, y: 100 }, { x: 200, y: 200 }, { x: 200, y: 300 }, { x: 200, y: 350 }],
+        right: [{ x: 500, y: 100 }, { x: 500, y: 200 }, { x: 500, y: 300 }, { x: 500, y: 350 }]
     };
 
-    // Find a better way to instatiate teams, some kind of dependency injection..
-    var t1 = createFcMowgli();
-    var t2 = createFcKogle();
-    this.team1 = new t1('left', this.field.w, this.field.h);
-    this.team2 = new t2('right', this.field.w, this.field.h);
-
+    this.team1 = new leftTeam('left', this.field.w, this.field.h);
+    this.team2 = new rightTeam('right', this.field.w, this.field.h);
 };
 
 Soccer.prototype.draw = function () {
@@ -221,6 +216,19 @@ Soccer.prototype.tick = function (time) {
     this.draw();
 };
 
+function selectChange() {
+    var leftTeamSelect = document.getElementById('left-team');
+    var rightTeamSelect = document.getElementById('right-team');
+    var defineLeftTeam = eval(leftTeamSelect.value);    // Yikes, it's the evil eval.
+    var defineRightTeam = eval(rightTeamSelect.value);  // Should be ok here for now.
+    game = new Soccer(defineLeftTeam(), defineRightTeam());
+}
+
+var leftTeamSelect = document.getElementById('left-team');
+var rightTeamSelect = document.getElementById('right-team');
+leftTeamSelect.addEventListener('change', selectChange);
+rightTeamSelect.addEventListener('change', selectChange);
+
 function run(currentTime) {
     var refreshRate = 10; // millis
     var interval = currentTime - lastTime;
@@ -235,6 +243,7 @@ function run(currentTime) {
     window.requestAnimationFrame(run);
 }
 
-var game = new Soccer();
 var lastTime;
-window.requestAnimationFrame(run);
+var game;
+selectChange();
+run();
