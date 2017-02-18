@@ -175,9 +175,9 @@ Soccer.prototype.tick = function (time) {
         return scoringTeam;
     }
 
-    function resetPlayer(player) {
-        player.x = 0;
-        player.y = 0;
+    function resetPlayer(player, xPos, yPos) {
+        player.x = xPos;
+        player.y = yPos;
         player.runDir = 0;
         player.runSpeed = 0;
         player.kickDir = 0;
@@ -186,9 +186,7 @@ Soccer.prototype.tick = function (time) {
 
     function resetTeam(players, distCenterLine) {
         players.forEach(function (player, index) {
-            resetPlayer(player);
-            player.x = distCenterLine;
-            player.y = 50 + index * 100;
+            resetPlayer(player, distCenterLine, 50 + index * 100);
         });
     }
 
