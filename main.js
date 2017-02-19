@@ -216,19 +216,6 @@ Soccer.prototype.tick = function (time) {
     this.draw();
 };
 
-function selectChange() {
-    var leftTeamSelect = document.getElementById('left-team');
-    var rightTeamSelect = document.getElementById('right-team');
-    var defineLeftTeam = eval(leftTeamSelect.value);    // Yikes, it's the evil eval.
-    var defineRightTeam = eval(rightTeamSelect.value);  // Should be ok here for now.
-    game = new Soccer(defineLeftTeam(), defineRightTeam());
-}
-
-var leftTeamSelect = document.getElementById('left-team');
-var rightTeamSelect = document.getElementById('right-team');
-leftTeamSelect.addEventListener('change', selectChange);
-rightTeamSelect.addEventListener('change', selectChange);
-
 function run(currentTime) {
     var refreshRate = 10; // millis
     var interval = currentTime - lastTime;
@@ -243,7 +230,18 @@ function run(currentTime) {
     window.requestAnimationFrame(run);
 }
 
+function createNewGame() {
+    var leftTeam = eval(leftTeamSelect.value)();    // Yikes, it's the notorious eval!
+    var rightTeam = eval(rightTeamSelect.value)();  // We evaluate string to get the team definition function
+    game = new Soccer(leftTeam, rightTeam);
+}
+
 var lastTime;
 var game;
-selectChange();
+var leftTeamSelect = document.getElementById('left-team');
+var rightTeamSelect = document.getElementById('right-team');
+
+leftTeamSelect.addEventListener('change', createNewGame);
+rightTeamSelect.addEventListener('change', createNewGame);
+createNewGame();
 run();
