@@ -19,7 +19,7 @@ function createNewGame() {
     game = new Soccer(leftTeam, rightTeam);
 }
 
-var lastTime;
+var lastTime = 0;
 var game;
 var leftTeamSelect = document.getElementById('left-team');
 var rightTeamSelect = document.getElementById('right-team');
@@ -27,4 +27,4 @@ var rightTeamSelect = document.getElementById('right-team');
 leftTeamSelect.addEventListener('change', createNewGame);
 rightTeamSelect.addEventListener('change', createNewGame);
 createNewGame();
-run();
+run(0);
