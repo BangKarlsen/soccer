@@ -232,7 +232,7 @@ function run(currentTime) {
 
 function createNewGame() {
     var leftTeam = eval(leftTeamSelect.value)();    // Yikes, it's the notorious eval!
-    var rightTeam = eval(rightTeamSelect.value)();  // We evaluate string to get the team definition function
+    var rightTeam = eval(rightTeamSelect.value)();  // Evaluate the string to get a function we can call
     game = new Soccer(leftTeam, rightTeam);
 }
 
