@@ -80,7 +80,7 @@ Soccer.prototype.draw = function () {
     drawTeam(this.ctx, this.team2, this.players[this.team2.side]);
 };
 
-Soccer.prototype.tick = function (time) {
+Soccer.prototype.tick = function (timestep) {
     function dist(a, b) {
         return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
     }
@@ -106,12 +106,13 @@ Soccer.prototype.tick = function (time) {
         player.kickSpeed = Math.min(player.kickSpeed, 15);
     }
 
-    function updatePosition(player) {
+    function updatePosition(player, timestep) {
+        var speedFix = 0.06;
         var variation = Math.min(Math.random() + 0.04, 1);
         player.runDir = player.runDir || 0;
         player.runSpeed = player.runSpeed || 0;
-        player.x += Math.cos(-player.runDir) * player.runSpeed * variation; // consider integrating over time
-        player.y += Math.sin(-player.runDir) * player.runSpeed * variation; // to be independent of refreshRate
+        player.x += Math.cos(-player.runDir) * player.runSpeed * variation * timestep * speedFix;
+        player.y += Math.sin(-player.runDir) * player.runSpeed * variation * timestep * speedFix;
     }
 
     function kickBall(player, ball) {
@@ -122,27 +123,29 @@ Soccer.prototype.tick = function (time) {
         }
     }
 
-    function updateTeam(team, players, opponents, ball, field) {
+    function updateTeam(team, players, opponents, ball, field, timestep) {
         var updatedPlayers = team.tick(players.slice(), opponents.slice(), { x: ball.x, y: ball.y });
         updatedPlayers.forEach(function (updatedPlayer, index) {
             var player = players[index];
             copyPlayer(player, updatedPlayer);
             repectSpeedlimits(player);
-            updatePosition(player);
+            updatePosition(player, timestep);
             clipPlayer(player, field);
             kickBall(player, ball);
         });
     }
 
-    function updateBall(ball, field, goal, score) {
+    function updateBall(ball, timestep) {
+        var speedFix = 0.06;
         if (ball.timesKicked > 1) {
             ball.dir = Math.random() * Math.PI * 2;
         }
         ball.timesKicked = 0;
         ball.speed = Math.max(ball.speed, 0);
         ball.speed = Math.min(ball.speed, 15);
-        ball.x += Math.cos(-ball.dir) * ball.speed;
-        ball.y += Math.sin(-ball.dir) * ball.speed;
+        ball.s
+        ball.x += Math.cos(-ball.dir) * ball.speed * timestep * speedFix;
+        ball.y += Math.sin(-ball.dir) * ball.speed * timestep * speedFix;
         ball.speed *= 0.9;
     }
 
@@ -208,9 +211,9 @@ Soccer.prototype.tick = function (time) {
         }
     }
 
-    updateTeam(this.team1, this.players[this.team1.side], this.players[this.team2.side], this.ball, this.field);
-    updateTeam(this.team2, this.players[this.team2.side], this.players[this.team1.side], this.ball, this.field);
-    updateBall(this.ball);
+    updateTeam(this.team1, this.players[this.team1.side], this.players[this.team2.side], this.ball, this.field, timestep);
+    updateTeam(this.team2, this.players[this.team2.side], this.players[this.team1.side], this.ball, this.field, timestep);
+    updateBall(this.ball, timestep);
     updateScores(this.score, this.players, this.ball, this.field, this.goal);
 
     this.draw();
