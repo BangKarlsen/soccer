@@ -53,7 +53,7 @@ Soccer.prototype.draw = function () {
     }
 
     function drawTeam(ctx, team, players) {
-        var drawPlayerNumber = true;
+        var drawPlayerNumber = false;
         players.forEach(function (player, index) {
             ctx.fillStyle = team.color;
             ctx.beginPath();
