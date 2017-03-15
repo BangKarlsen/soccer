@@ -1,8 +1,7 @@
 function defineFcMowgli() {
-    function FcMowgli(side, fieldW, fieldH) {
+    function FcMowgli(side, field) {
         this.side = side;
-        this.fieldW = fieldW;
-        this.fieldH = fieldH;
+        this.field = field;
         this.name = 'FC Mowgli';
         this.color = 'lightblue';
         console.log('Created ' + this.color + ' team: ' + this.name);
@@ -19,15 +18,15 @@ function defineFcMowgli() {
 
         function goalPos() {
             return {
-                x: side === 'left' ? 0 : fieldW,
-                y: fieldH / 2
+                x: side === 'left' ? 0 : field.w,
+                y: field.h / 2
             };
         }
 
         function opponentGoalPos() {
             return {
-                x: side === 'left' ? fieldW : 0,
-                y: fieldH / 2
+                x: side === 'left' ? field.w : 0,
+                y: field.h / 2
             };
         }
 
@@ -67,8 +66,10 @@ function defineFcMowgli() {
 
         var runDir = this.side === 'left' ? 0 : Math.PI;
         var side = this.side;
-        var fieldW = this.fieldW;
-        var fieldH = this.fieldH;
+        var field = {
+            w: this.field.w,
+            h: this.field.h
+        };
 
         // Player 0 is goal keeper
         players[0] = updateGoalie(players[0]);

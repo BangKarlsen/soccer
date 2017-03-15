@@ -1,8 +1,7 @@
 function defineFcKogle() {
-    function FcKogle(side, fieldW, fieldH) {
+    function FcKogle(side, field) {
         this.side = side;
-        this.fieldW = fieldW;
-        this.fieldH = fieldH;
+        this.field = field;
         this.name = 'FC Kogle';
         this.color = 'orange';
         console.log('Created ' + this.color + ' team: ' + this.name);
@@ -19,15 +18,15 @@ function defineFcKogle() {
 
         function goalPos() {
             return {
-                x: side === 'left' ? 0 : fieldW,
-                y: fieldH / 2
+                x: side === 'left' ? 0 : field.w,
+                y: field.h / 2
             };
         }
 
         function opponentGoalPos() {
             return {
-                x: side === 'left' ? fieldW : 0,
-                y: fieldH / 2
+                x: side === 'left' ? field.w : 0,
+                y: field.h / 2
             };
         }
 
@@ -94,7 +93,7 @@ function defineFcKogle() {
         function updateDefender(defender, players, ball, closestsToBall) {
             var runDir;
             var runSpeed = 3;
-            var defendSpot = { x: 550, y: fieldH / 2 };
+            var defendSpot = { x: 550, y: field.h / 2 };
             if (isClosestsToBall(defender, players, ball)) {
                 // run to ball and kick it away
                 runDir = dir(defender, ball);
@@ -132,8 +131,8 @@ function defineFcKogle() {
             var runSpeed = 3;
             var kickDir = Math.PI;
             var cSpot = { 
-                x: fieldW / 2,
-                y: ball.y < fieldH / 2 ? fieldH / 3 : fieldH - fieldH / 3 
+                x: field.w / 2,
+                y: ball.y < field.h / 2 ? field.h / 3 : field.h - field.h / 3 
             };
             var attacker = roles['attacker'];
             if (isClosestsToBall(center, players, ball)) {
@@ -161,8 +160,10 @@ function defineFcKogle() {
         }
 
         var side = this.side;
-        var fieldW = this.fieldW;
-        var fieldH = this.fieldH;
+        var field = {
+            w: this.field.w,
+            h: this.field.h
+        };
         players.forEach(function (player, index) {
             players[index] = {
                 x: player.x,

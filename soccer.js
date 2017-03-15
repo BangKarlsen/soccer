@@ -25,8 +25,8 @@ function Soccer(leftTeam, rightTeam) {
         right: [{ x: 500, y: 100 }, { x: 500, y: 200 }, { x: 500, y: 300 }, { x: 500, y: 350 }]
     };
 
-    this.team1 = new leftTeam('left', this.field.w, this.field.h);
-    this.team2 = new rightTeam('right', this.field.w, this.field.h);
+    this.team1 = new leftTeam('left', this.field);
+    this.team2 = new rightTeam('right', this.field);
 };
 
 Soccer.prototype.draw = function () {
