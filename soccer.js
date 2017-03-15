@@ -143,7 +143,6 @@ Soccer.prototype.tick = function (timestep) {
         ball.timesKicked = 0;
         ball.speed = Math.max(ball.speed, 0);
         ball.speed = Math.min(ball.speed, 15);
-        ball.s
         ball.x += Math.cos(-ball.dir) * ball.speed * timestep * speedFix;
         ball.y += Math.sin(-ball.dir) * ball.speed * timestep * speedFix;
         ball.speed *= 0.9;
