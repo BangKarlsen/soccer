@@ -2,8 +2,8 @@ function Soccer(leftTeam, rightTeam) {
     var canvas = document.getElementById('field');
     this.ctx = canvas.getContext('2d');
     this.field = {
-        w: canvas.getAttribute('width'),
-        h: canvas.getAttribute('height')
+        w: parseInt(canvas.getAttribute('width'), 10),
+        h: parseInt(canvas.getAttribute('height'), 10)
     };
     this.goal = {
         w: 40,
@@ -21,12 +21,13 @@ function Soccer(leftTeam, rightTeam) {
         right: 0
     };
     this.players = {
-        left: [{ x: 200, y: 100 }, { x: 200, y: 200 }, { x: 200, y: 300 }, { x: 200, y: 350 }],
-        right: [{ x: 500, y: 100 }, { x: 500, y: 200 }, { x: 500, y: 300 }, { x: 500, y: 350 }]
+        left: [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }],
+        right: [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }]
     };
-
     this.team1 = new leftTeam('left', this.field);
     this.team2 = new rightTeam('right', this.field);
+
+    this.reset('left');
 };
 
 Soccer.prototype.draw = function () {
@@ -35,10 +36,10 @@ Soccer.prototype.draw = function () {
         gradient.addColorStop(0.5, 'green');
         gradient.addColorStop(1, 'darkgreen');
         ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, field.w, field.h);                                   // field grass
+        ctx.fillRect(0, 0, field.w, field.h);                                       // field grass
         ctx.strokeStyle = 'white';
-        ctx.strokeRect(0, 0, field.w, field.h);                                 // field outline
-        ctx.strokeRect(field.w / 2 - 1, 0, 2, field.h);                           // center line
+        ctx.strokeRect(0, 0, field.w, field.h);                                     // field outline
+        ctx.strokeRect(field.w / 2 - 1, 0, 2, field.h);                             // center line
         ctx.strokeRect(0, field.h / 2 - goal.h / 2, goal.w, goal.h);                // left goal
         ctx.strokeRect(field.w - goal.w, field.h / 2 - goal.h / 2, goal.w, goal.h); // right goal
     }
@@ -62,10 +63,6 @@ Soccer.prototype.draw = function () {
             ctx.strokeStyle = 'black';
             ctx.stroke();
             if (drawPlayerNumber) {
-                // ctx.beginPath();
-                // ctx.lineTo( Math.cos(-player.runDir) * player.runSpeed,  Math.sin(-player.runDir) * player.runSpeed);
-                // ctx.strokeStyle = 'red';
-                // ctx.stroke();
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillStyle = 'white';
@@ -172,6 +169,32 @@ Soccer.prototype.tick = function (timestep) {
         return scoringTeam;
     }
 
+    function oppositeTeam(team) {
+        return team === 'left' ? 'right' : 'left';
+    }
+
+    function updateScores(score, ball, field, goal) {
+        var scoringTeam = checkScores(ball, field, goal);
+        if (scoringTeam) {
+            score[scoringTeam]++;
+            console.log('Score is now ' + score.left + ' - ' + score.right + ' (' + scoringTeam + ' scored)');
+        }
+        return scoringTeam;
+    }
+
+    updateTeam(this.team1, this.players[this.team1.side], this.players[this.team2.side], this.ball, this.field, timestep);
+    updateTeam(this.team2, this.players[this.team2.side], this.players[this.team1.side], this.ball, this.field, timestep);
+    updateBall(this.ball, timestep);
+
+    var scoringTeam = updateScores(this.score, this.ball, this.field, this.goal, this);
+    if (scoringTeam) {
+        this.reset(oppositeTeam(scoringTeam));
+    }
+
+    this.draw();
+};
+
+Soccer.prototype.reset = function (teamHasBall) {
     function resetPlayer(player, xPos, yPos) {
         player.x = xPos;
         player.y = yPos;
@@ -181,39 +204,26 @@ Soccer.prototype.tick = function (timestep) {
         player.kickSpeed = 0;
     }
 
-    function resetTeam(players, distCenterLine) {
+    function resetTeam(players, distCenterLine, fieldHeight) {
+        var numPlayers = players.length;
+        var stride = fieldHeight / players.length;
         players.forEach(function (player, index) {
-            resetPlayer(player, distCenterLine, 50 + index * 100);
+            resetPlayer(player, distCenterLine, (stride / 2) + (index * stride));
         });
     }
 
-    /* uh, much hardcoded stuff going on here.. */
-    function resetTeams(scoringTeam, players, ball) {
-        ball.x = 350;
-        ball.y = 200;
+    function resetTeams(teamHasBall, players, ball, field) {
+        ball.x = field.w / 2;
+        ball.y = field.h / 2;
         ball.speed = 0;
-        if (scoringTeam === 'left') {
-            resetTeam(players.right, 360);
-            resetTeam(players.left, 150);
+        if (teamHasBall === 'left') {
+            resetTeam(players.left, field.w / 2 - 60, field.h);
+            resetTeam(players.right, field.w / 2 + 100, field.h);
         } else {
-            resetTeam(players.right, 550);
-            resetTeam(players.left, 340);
+            resetTeam(players.left, field.w / 2 - 100, field.h);
+            resetTeam(players.right, field.w / 2 + 60, field.h);
         }
     }
 
-    function updateScores(score, players, ball, field, goal) {
-        var scoringTeam = checkScores(ball, field, goal);
-        if (scoringTeam) {
-            score[scoringTeam]++;
-            console.log('Score is now ' + score.left + ' - ' + score.right + ' (' + scoringTeam + ' scored)');
-            resetTeams(scoringTeam, players, ball);
-        }
-    }
-
-    updateTeam(this.team1, this.players[this.team1.side], this.players[this.team2.side], this.ball, this.field, timestep);
-    updateTeam(this.team2, this.players[this.team2.side], this.players[this.team1.side], this.ball, this.field, timestep);
-    updateBall(this.ball, timestep);
-    updateScores(this.score, this.players, this.ball, this.field, this.goal);
-
-    this.draw();
-};
+    resetTeams(teamHasBall, this.players, this.ball, this.field);
+}
