@@ -186,7 +186,7 @@ Soccer.prototype.tick = function (timestep) {
     updateTeam(this.team2, this.players[this.team2.side], this.players[this.team1.side], this.ball, this.field, timestep);
     updateBall(this.ball, timestep);
 
-    var scoringTeam = updateScores(this.score, this.ball, this.field, this.goal, this);
+    var scoringTeam = updateScores(this.score, this.ball, this.field, this.goal);
     if (scoringTeam) {
         this.reset(oppositeTeam(scoringTeam));
     }
