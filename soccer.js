@@ -13,6 +13,7 @@ function Soccer(leftTeam, rightTeam) {
         x: this.field.w / 2,
         y: this.field.h / 2,
         dir: 0,
+        radius: 7,
         speed: 0,
         timesKicked: 0
     };
@@ -46,7 +47,7 @@ Soccer.prototype.draw = function () {
 
     function drawBall(ctx, ball) {
         ctx.beginPath();
-        ctx.arc(ball.x, ball.y, 7, 0, Math.PI * 2);
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
         ctx.fillStyle = 'grey';
         ctx.fill();
         ctx.strokeStyle = 'black';
@@ -145,32 +146,44 @@ Soccer.prototype.tick = function (timestep) {
         ball.speed *= 0.9;
     }
 
-    function clipBallPos(ball, field) {
-        ball.x = Math.max(0, ball.x);
-        ball.x = Math.min(field.w, ball.x);
-        ball.y = Math.max(10, ball.y);
-        ball.y = Math.min(field.h, ball.y);
+    function reflectBall(ball, field) {
+        if (ball.x < ball.radius) {
+            ball.x = ball.radius;
+            ball.dir = Math.PI - ball.dir;
+        }
+        if (ball.x > field.w - ball.radius) {
+            ball.x = field.w - ball.radius
+            ball.dir = Math.PI - ball.dir;
+        }
+        if (ball.y < ball.radius) {
+            ball.y = ball.radius
+            ball.dir = -ball.dir;
+        }
+        if (ball.y > field.h - ball.radius) {
+            ball.y = field.h - ball.radius
+            ball.dir = -ball.dir;
+        }
     }
 
-    function checkScores(ball, field, goal) {
-        var scoringTeam;
+    function isInGoal(ball, field, goal) {
         var goalLine = {
             start: field.h / 2 - goal.h / 2,
             end: field.h / 2 - goal.h / 2 + goal.h
         };
-        var isInGoal = ball.y > goalLine.start && ball.y < goalLine.end;
-        if (ball.x < 0 && isInGoal) {
-            scoringTeam = 'right';
-        } else if (ball.x > field.w && isInGoal) {
-            scoringTeam = 'left';
-        } else {
-            clipBallPos(ball, field);
-        }
-        return scoringTeam;
+        return ball.y > goalLine.start && ball.y < goalLine.end;
     }
 
-    function oppositeTeam(team) {
-        return team === 'left' ? 'right' : 'left';
+    function checkScores(ball, field, goal) {
+        var scoringTeam;
+        var inGoal = isInGoal(ball, field, goal);
+        if (ball.x < 0 && inGoal) {
+            scoringTeam = 'right';
+        } else if (ball.x > field.w && inGoal) {
+            scoringTeam = 'left';
+        } else {
+            reflectBall(ball, field);
+        }
+        return scoringTeam;
     }
 
     function updateScores(score, ball, field, goal) {
@@ -180,6 +193,10 @@ Soccer.prototype.tick = function (timestep) {
             console.log('Score is now ' + score.left + ' - ' + score.right + ' (' + scoringTeam + ' scored)');
         }
         return scoringTeam;
+    }
+
+    function oppositeTeam(team) {
+        return team === 'left' ? 'right' : 'left';
     }
 
     updateTeam(this.team1, this.players[this.team1.side], this.players[this.team2.side], this.ball, this.field, timestep);
