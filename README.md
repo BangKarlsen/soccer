@@ -1,6 +1,6 @@
 # AI Soccer Master King 2000
 
-Game is sadly under active development, but not ready for public realease yet.
+~~Game is under active development, but not ready for public realease yet.~~
 
 Update (2024): Game is sadly NOT under active development, but the idea still holds lots of potential.
 
